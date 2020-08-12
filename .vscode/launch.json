@@ -1,0 +1,18 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Node Inspector - Downloader",
+			"type": "node",
+			"request": "launch",
+			"args": ["${workspaceRoot}/packages/downloader/src/index.ts"],
+			"runtimeArgs": ["-r", "ts-node/register/transpile-only"],
+			"cwd": "${workspaceRoot}",
+			"protocol": "inspector",
+			"internalConsoleOptions": "openOnSessionStart",
+			"env": {
+				"TS_NODE_IGNORE": "false"
+			}
+		}
+	]
+}

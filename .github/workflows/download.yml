@@ -1,0 +1,49 @@
+name: Download postal code
+
+on:
+  push:
+    branches:
+      - master
+      - workflows
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - name: Cache yarn caches
+      uses: actions/cache@v1
+      env:
+        cache-version: 1
+        cache-name: cache-yarn-caches
+      with:
+        path: ~/.cache/yarn
+        key: ${{ env.cache-version }}-${{ runner.os }}-download-${{ env.cache-name }}
+
+    - run: yarn --frozen-lockfile
+
+    - name: Create Directory
+      run: mkdir -p packages/downloader/out/json
+
+    - name: Download
+      run: yarn --cwd packages/downloader run download
+
+    - name: Extract JSON Files
+      run: unzip -o packages/downloader/out/postalcode.zip -d packages/downloader/out/json/ > /dev/null
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: postalcode.zip
+        path: packages/downloader/out/postalcode.zip
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: packages/downloader/out/json

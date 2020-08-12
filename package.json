@@ -1,0 +1,7 @@
+{
+  "name": "postalcode",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}
