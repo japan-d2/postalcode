@@ -80,9 +80,21 @@ function createTransformCompletionHandler (outputPath: string): transform.Callba
   }
 }
 
+function normalize (str: string): string {
+  return str.normalize('NFKC')
+    .replace( /　/g, '' )
+    .replace( /（.*/, '' )
+    .replace( /\(.*/, '' )
+    .replace( /.*場合$/, "" )
+    .replace( /.*バアイ$/i, "" )
+    .replace( /.*一円$/, "" )
+    .replace( /.*イチエン$/i, "" )
+    .trim()
+}
+
 function createTransformer (outputPath: string): transform.Transformer {
   return transform((record, callback) => {
-    callback(null, record.map((c) => c.normalize('NFKC').trim()))
+    callback(null, record.map(normalize))
   }, createTransformCompletionHandler(outputPath))
 }
 
