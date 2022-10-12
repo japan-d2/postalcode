@@ -1,0 +1,33 @@
+name: Renovate
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # every AM 9 JST
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+env:
+  RENOVATE_USERNAME: "postalcode-renovate-ci[bot]"
+  RENOVATE_GIT_AUTHOR: "postalcode.renovate-ci bot <115638951+postalcode-renovate-ci[bot]@users.noreply.github.com>"
+
+jobs:
+  renovate:
+    # マージ時に実行する際の条件分岐。pull_request eventではrenovate用ブランチ（prefix=`renovate/`）がマージされた場合にのみ実行させる
+    if: github.event_name != 'pull_request' || (github.event.pull_request.merged == true && startsWith(github.head_ref,'renovate/'))
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+
+      - name: execute Renovate
+        uses: japan-d2/jdd-internal-sharing/.github/actions/renovate@main
+        with:
+          git-author: ${{ env.RENOVATE_GIT_AUTHOR }}
+          username: ${{ env.RENOVATE_USERNAME }}
+          onboarding: false
+          github-app_id: ${{ secrets.RENOVATE_APP_ID }}
+          github-app_private_key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
