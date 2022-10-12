@@ -37,7 +37,7 @@ jobs:
     - name: Extract JSON Files
       run: unzip -o packages/downloader/out/postalcode.zip -d packages/downloader/out/json/ > /dev/null
 
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
       with:
         name: postalcode.zip
         path: packages/downloader/out/postalcode.zip
