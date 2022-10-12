@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@7884fcad6b5d53d10323aee724dc68d8b9096a2e # tag=v2
+    - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # tag=v1
       with:
         node-version: 16.x
     - name: Cache yarn caches
-      uses: actions/cache@v1
+      uses: actions/cache@70655ec8323daeeaa7ef06d7c56e1b9191396cbe # tag=v1
       env:
         cache-version: 1
         cache-name: cache-yarn-caches
@@ -37,13 +37,13 @@ jobs:
     - name: Extract JSON Files
       run: unzip -o packages/downloader/out/postalcode.zip -d packages/downloader/out/json/ > /dev/null
 
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@3446296876d12d4e3a0f3145a3c87e67bf0a16b5 # tag=v1
       with:
         name: postalcode.zip
         path: packages/downloader/out/postalcode.zip
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@068dc23d9710f1ba62e86896f84735d869951305 # tag=v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: packages/downloader/out/json
