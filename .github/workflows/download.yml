@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@7884fcad6b5d53d10323aee724dc68d8b9096a2e # tag=v2
-    - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # tag=v1
+    - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+    - uses: actions/setup-node@969bd2663942d722d85b6a8626225850c2f7be4b # tag=v3
       with:
         node-version: 16.x
     - name: Cache yarn caches
-      uses: actions/cache@70655ec8323daeeaa7ef06d7c56e1b9191396cbe # tag=v1
+      uses: actions/cache@56461b9eb0f8438fd15c7a9968e3c9ebb18ceff1 # tag=v3
       env:
         cache-version: 1
         cache-name: cache-yarn-caches
@@ -37,7 +37,7 @@ jobs:
     - name: Extract JSON Files
       run: unzip -o packages/downloader/out/postalcode.zip -d packages/downloader/out/json/ > /dev/null
 
-    - uses: actions/upload-artifact@3446296876d12d4e3a0f3145a3c87e67bf0a16b5 # tag=v1
+    - uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
       with:
         name: postalcode.zip
         path: packages/downloader/out/postalcode.zip
