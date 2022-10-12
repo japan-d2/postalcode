@@ -1,0 +1,17 @@
+{
+  extends: [
+    "config:base",
+    ":disableRateLimiting", // config:baseでlimit設定されているため上書き
+    "helpers:pinGitHubActionDigests",
+  ],
+  timezone: "Asia/Tokyo",
+  packageRules: [
+    {
+      groupName: "eslint",
+      matchPackagePatterns: [
+        "^eslint",
+        "^@types/eslint",
+      ],
+    },
+  ],
+}
