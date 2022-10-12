@@ -4,8 +4,9 @@ import * as unzip from 'unzipper'
 import * as csv from 'csv-parse'
 import * as transform from 'stream-transform'
 import * as iconv from 'iconv-lite'
-import * as archiver from 'archiver'
-import { createWriteStream } from 'fs'
+import archiver from 'archiver'
+import { createWriteStream } from 'node:fs'
+import { pipeline } from 'node:stream/promises'
 
 import * as config from './config.json'
 
@@ -54,14 +55,14 @@ async function handleTransformResult (rows: string[][], context: { archive: arch
   await context.archive.finalize()
 }
 
-function createTransformCompletionHandler (outputPath: string): transform.Callback {
-  return (error, data) => {
+function createTransformCompletionHandler (outputPath: string, onComplete: () => void, onError: (error: unknown) => void): transform.Callback {
+  return async (error, data) => {
     if (error) {
-      throw error
+      return onError(error)
     }
 
     if (!data) {
-      throw new Error('data is empty')
+      return onError(new Error('data is empty'))
     }
 
     const destination = createWriteStream(outputPath)
@@ -73,48 +74,65 @@ function createTransformCompletionHandler (outputPath: string): transform.Callba
     })
 
     archive.pipe(destination)
+      .on('error', onError)
 
-    handleTransformResult(data as unknown as string[][], {
-      archive,
-    })
+    try {
+      await handleTransformResult(data as unknown as string[][], {
+        archive,
+      })
+
+      onComplete()
+    } catch (error) {
+      onError(error)
+    }
   }
 }
 
 function normalize (str: string): string {
   return str.normalize('NFKC')
-    .replace( /　/g, '' )
-    .replace( /（.*/, '' )
-    .replace( /\(.*/, '' )
-    .replace( /.*場合$/, "" )
-    .replace( /.*バアイ$/i, "" )
-    .replace( /.*一円$/, "" )
-    .replace( /.*イチエン$/i, "" )
+    .replace(/\u3000/g, '')
+    .replace(/（.*/, '')
+    .replace(/\(.*/, '')
+    .replace(/.*場合$/, '')
+    .replace(/.*バアイ$/i, '')
+    .replace(/.*一円$/, '')
+    .replace(/.*イチエン$/i, '')
     .trim()
 }
 
-function createTransformer (outputPath: string): transform.Transformer {
-  return transform((record, callback) => {
+function createTransformer (outputPath: string, onComplete: () => void, onError: (error: unknown) => void): transform.Transformer {
+  return transform.transform((record, callback) => {
     callback(null, record.map(normalize))
-  }, createTransformCompletionHandler(outputPath))
+  }, createTransformCompletionHandler(outputPath, onComplete, onError))
 }
 
 async function handleCsvEntry (entry: unzip.Entry, outputPath: string) {
-  entry
-    .pipe(iconv.decodeStream('SJIS'))
-    .pipe(iconv.encodeStream('UTF-8'))
-    .pipe(csv())
-    .pipe(createTransformer(outputPath))
+  return new Promise<void>(async (resolve, reject) => {
+    try {
+      await pipeline([
+        entry,
+        iconv.decodeStream('SJIS'),
+        csv.parse(),
+        createTransformer(outputPath, resolve, reject),
+      ])
+    } catch (error) {
+      reject(error)
+    }
+  })
 }
 
-function createEntryHandler (outputPath: string): (entry: unzip.Entry) => void {
+function createEntryHandler (outputPath: string, onComplete: () => void, onError: (error: unknown) => void): (entry: unzip.Entry) => void {
   return (entry: unzip.Entry) => {
     if (entry.path !== 'KEN_ALL.CSV') {
       entry.autodrain()
+        .on('error', onError)
 
       return
     }
 
     handleCsvEntry(entry, outputPath)
+      .then(onComplete)
+      .catch(onError)
   }
 }
 
@@ -128,9 +146,17 @@ async function download (configurations: Configurations) {
     responseType: 'stream',
   })
 
-  response.data
-    .pipe(unzip.Parse())
-    .on('entry', createEntryHandler(configurations.outputPath))
+  return new Promise<void>((resolve, reject) => {
+    response.data
+      .pipe(unzip.Parse())
+      .on('entry', createEntryHandler(configurations.outputPath, resolve, reject))
+      .on('error', reject)
+  })
 }
 
 download(config)
+  .catch((error) => {
+    console.error(error)
+
+    process.exitCode = 1
+  })
