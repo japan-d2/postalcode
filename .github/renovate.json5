@@ -7,6 +7,12 @@
   timezone: "Asia/Tokyo",
   packageRules: [
     {
+      groupName: "actions",
+      matchPackagePatterns: [
+        "^actions/",
+      ],
+    },
+    {
       groupName: "eslint",
       matchPackagePatterns: [
         "^eslint",
