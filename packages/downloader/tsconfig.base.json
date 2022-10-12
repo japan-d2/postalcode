@@ -9,7 +9,8 @@
     "strict": true,
     "sourceMap": false,
     "target": "es2019",
-    "outDir": "dist"
+    "outDir": "dist",
+    "esModuleInterop": true
   },
   "include": [
     "src/**/*.ts",
