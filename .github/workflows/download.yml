@@ -18,7 +18,7 @@ jobs:
       with:
         node-version: 16.x
     - name: Cache yarn caches
-      uses: actions/cache@v1
+      uses: actions/cache@56461b9eb0f8438fd15c7a9968e3c9ebb18ceff1 # tag=v3
       env:
         cache-version: 1
         cache-name: cache-yarn-caches
