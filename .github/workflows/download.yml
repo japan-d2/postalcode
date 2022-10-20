@@ -3,7 +3,7 @@ name: Download postal code
 on:
   push:
     branches:
-      - master
+      - main
       - workflows
   schedule:
     - cron: '0 0 * * *'
