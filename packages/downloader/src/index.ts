@@ -43,14 +43,24 @@ function postalCodeToPath (postalCode: string): string {
 }
 
 async function handleTransformResult (rows: string[][], context: { archive: archiver.Archiver }) {
+  const archive: Record<string, AddressObject[]> = {}
+
   for (const row of rows) {
     const address = rowToAddress(row)
     const path = postalCodeToPath(address.postalCode)
 
-    context.archive.append(JSON.stringify(address), {
+    if (!archive[path]) {
+      archive[path] = []
+    }
+
+    archive[path].push(address)
+  }
+
+  Object.entries(archive).forEach(([path, addresses]) => {
+    context.archive.append(JSON.stringify(addresses), {
       name: `${path}.json`,
     })
-  }
+  })
 
   await context.archive.finalize()
 }
