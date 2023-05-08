@@ -23,11 +23,18 @@ jobs:
     steps:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
 
-      - name: execute Renovate
-        uses: japan-d2/jdd-internal-sharing/.github/actions/renovate@main
+      - name: generate github token
+        id: generate_github_token
+        uses: tibdex/github-app-token@021a2405c7f990db57f5eae5397423dcc554159c # tag=v1.7.0
         with:
-          git-author: ${{ env.RENOVATE_GIT_AUTHOR }}
-          username: ${{ env.RENOVATE_USERNAME }}
-          onboarding: false
-          github-app_id: ${{ secrets.RENOVATE_APP_ID }}
-          github-app_private_key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          app_id: ${{ secrets.RENOVATE_APP_ID }}
+          private_key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+
+      - uses: renovatebot/github-action@e3e5485adcef612196fb016d8b7c432c643f747b # tag=v34.24.0
+        with:
+          token: "x-access-token:${{ steps.generate_github_token.outputs.token }}"
+        env:
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          RENOVATE_USERNAME: ${{ env.RENOVATE_USERNAME }}
+          RENOVATE_GIT_AUTHOR: ${{ env.RENOVATE_GIT_AUTHOR }}
+          RENOVATE_ONBOARDING: false
