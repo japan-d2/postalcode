@@ -10,7 +10,7 @@
     "csv-parse": "5.3.1",
     "iconv-lite": "0.6.3",
     "node-zip": "1.1.1",
-    "stream-transform": "3.2.0",
+    "stream-transform": "3.3.1",
     "unzipper": "0.10.11"
   },
   "devDependencies": {
