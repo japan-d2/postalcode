@@ -30,7 +30,7 @@ jobs:
           app_id: ${{ secrets.RENOVATE_APP_ID }}
           private_key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
 
-      - uses: renovatebot/github-action@e3e5485adcef612196fb016d8b7c432c643f747b # tag=v34.24.0
+      - uses: renovatebot/github-action@28bcd5c4900a4353b5c9af9e1bd61dd6377f0f0d # v40.3.5
         with:
           token: "x-access-token:${{ steps.generate_github_token.outputs.token }}"
         env:
