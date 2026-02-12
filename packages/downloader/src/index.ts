@@ -1,14 +1,14 @@
-import axios from 'axios'
+import axios from 'axios';
 
-import * as unzip from 'unzipper'
-import * as csv from 'csv-parse'
-import * as transform from 'stream-transform'
-import * as iconv from 'iconv-lite'
-import archiver from 'archiver'
-import { createWriteStream } from 'node:fs'
-import { pipeline } from 'node:stream/promises'
+import * as unzip from 'unzipper';
+import * as csv from 'csv-parse';
+import * as transform from 'stream-transform';
+import * as iconv from 'iconv-lite';
+import archiver from 'archiver';
+import { createWriteStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
 
-import config from './config.json' with { type: 'json' }
+import config from './config.json' with { type: 'json' };
 
 interface AddressObject {
   postalCode: string;
@@ -20,12 +20,8 @@ interface AddressObject {
   address2: string;
 }
 
-function rowToAddress (row: string[]): AddressObject {
-  const [,,
-    postalCode,
-    prefKana, address1Kana, address2Kana,
-    pref, address1, address2,
-  ] = row
+function rowToAddress(row: string[]): AddressObject {
+  const [, , postalCode, prefKana, address1Kana, address2Kana, pref, address1, address2] = row;
 
   return {
     postalCode,
@@ -35,71 +31,75 @@ function rowToAddress (row: string[]): AddressObject {
     pref,
     address1,
     address2,
-  }
+  };
 }
 
-function postalCodeToPath (postalCode: string): string {
-  return postalCode.replace(/^(\d{3})/, '$1/')
+function postalCodeToPath(postalCode: string): string {
+  return postalCode.replace(/^(\d{3})/, '$1/');
 }
 
-async function handleTransformResult (rows: string[][], context: { archive: archiver.Archiver }) {
-  const archive: Record<string, AddressObject[]> = {}
+async function handleTransformResult(rows: string[][], context: { archive: archiver.Archiver }) {
+  const archive: Record<string, AddressObject[]> = {};
 
   for (const row of rows) {
-    const address = rowToAddress(row)
-    const path = postalCodeToPath(address.postalCode)
+    const address = rowToAddress(row);
+    const path = postalCodeToPath(address.postalCode);
 
     if (!archive[path]) {
-      archive[path] = []
+      archive[path] = [];
     }
 
-    archive[path].push(address)
+    archive[path].push(address);
   }
 
   Object.entries(archive).forEach(([path, addresses]) => {
     context.archive.append(JSON.stringify(addresses), {
       name: `${path}.json`,
-    })
-  })
+    });
+  });
 
-  await context.archive.finalize()
+  await context.archive.finalize();
 }
 
-function createTransformCompletionHandler (outputPath: string, onComplete: () => void, onError: (error: unknown) => void): transform.Callback {
+function createTransformCompletionHandler(
+  outputPath: string,
+  onComplete: () => void,
+  onError: (error: unknown) => void
+): transform.Callback {
   return async (error, data) => {
     if (error) {
-      return onError(error)
+      return onError(error);
     }
 
     if (!data) {
-      return onError(new Error('data is empty'))
+      return onError(new Error('data is empty'));
     }
 
-    const destination = createWriteStream(outputPath)
+    const destination = createWriteStream(outputPath);
 
     const archive = archiver('zip', {
       zlib: {
         level: 9,
       },
-    })
+    });
 
-    archive.pipe(destination)
-      .on('error', onError)
+    archive.pipe(destination).on('error', onError);
 
     try {
       await handleTransformResult(data as unknown as string[][], {
         archive,
-      })
+      });
 
-      onComplete()
+      onComplete();
     } catch (error) {
-      onError(error)
+      onError(error);
     }
-  }
+  };
 }
 
-function normalize (str: string): string {
-  return str.normalize('NFKC')
+function normalize(str: string): string {
+  return str
+    .normalize('NFKC')
     .replace(/\u3000/g, '')
     .replace(/（.*/, '')
     .replace(/\(.*/, '')
@@ -107,16 +107,23 @@ function normalize (str: string): string {
     .replace(/.*バアイ$/i, '')
     .replace(/.*一円$/, '')
     .replace(/.*イチエン$/i, '')
-    .trim()
+    .trim();
 }
 
-function createTransformer (outputPath: string, onComplete: () => void, onError: (error: unknown) => void): transform.Transformer {
-  return transform.transform((record, callback) => {
-    callback(null, record.map(normalize))
-  }, createTransformCompletionHandler(outputPath, onComplete, onError))
+function createTransformer(
+  outputPath: string,
+  onComplete: () => void,
+  onError: (error: unknown) => void
+): transform.Transformer {
+  return transform.transform(
+    (record, callback) => {
+      callback(null, record.map(normalize));
+    },
+    createTransformCompletionHandler(outputPath, onComplete, onError)
+  );
 }
 
-async function handleCsvEntry (entry: unzip.Entry, outputPath: string) {
+async function handleCsvEntry(entry: unzip.Entry, outputPath: string) {
   return new Promise<void>(async (resolve, reject) => {
     try {
       await pipeline([
@@ -124,26 +131,27 @@ async function handleCsvEntry (entry: unzip.Entry, outputPath: string) {
         iconv.decodeStream('SJIS'),
         csv.parse(),
         createTransformer(outputPath, resolve, reject),
-      ])
+      ]);
     } catch (error) {
-      reject(error)
+      reject(error);
     }
-  })
+  });
 }
 
-function createEntryHandler (outputPath: string, onComplete: () => void, onError: (error: unknown) => void): (entry: unzip.Entry) => void {
+function createEntryHandler(
+  outputPath: string,
+  onComplete: () => void,
+  onError: (error: unknown) => void
+): (entry: unzip.Entry) => void {
   return (entry: unzip.Entry) => {
     if (entry.path !== 'KEN_ALL.CSV') {
-      entry.autodrain()
-        .on('error', onError)
+      entry.autodrain().on('error', onError);
 
-      return
+      return;
     }
 
-    handleCsvEntry(entry, outputPath)
-      .then(onComplete)
-      .catch(onError)
-  }
+    handleCsvEntry(entry, outputPath).then(onComplete).catch(onError);
+  };
 }
 
 interface Configurations {
@@ -151,22 +159,21 @@ interface Configurations {
   outputPath: string;
 }
 
-async function download (configurations: Configurations) {
+async function download(configurations: Configurations) {
   const response = await axios.get(configurations.kenAllUrl, {
     responseType: 'stream',
-  })
+  });
 
   return new Promise<void>((resolve, reject) => {
     response.data
       .pipe(unzip.Parse())
       .on('entry', createEntryHandler(configurations.outputPath, resolve, reject))
-      .on('error', reject)
-  })
+      .on('error', reject);
+  });
 }
 
-download(config)
-  .catch((error) => {
-    console.error(error)
+download(config).catch((error) => {
+  console.error(error);
 
-    process.exitCode = 1
-  })
+  process.exitCode = 1;
+});
