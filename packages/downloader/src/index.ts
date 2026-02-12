@@ -8,7 +8,7 @@ import archiver from 'archiver'
 import { createWriteStream } from 'node:fs'
 import { pipeline } from 'node:stream/promises'
 
-import * as config from './config.json'
+import config from './config.json' with { type: 'json' }
 
 interface AddressObject {
   postalCode: string;
