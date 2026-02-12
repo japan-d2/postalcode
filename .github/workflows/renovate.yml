@@ -21,16 +21,16 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: generate github token
         id: generate_github_token
-        uses: tibdex/github-app-token@021a2405c7f990db57f5eae5397423dcc554159c # tag=v1.7.0
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
         with:
           app_id: ${{ secrets.RENOVATE_APP_ID }}
           private_key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
 
-      - uses: renovatebot/github-action@e3e5485adcef612196fb016d8b7c432c643f747b # tag=v34.24.0
+      - uses: renovatebot/github-action@e23f4d9675532445118c886434f5a34292b630b4 # v46.0.2
         with:
           token: "x-access-token:${{ steps.generate_github_token.outputs.token }}"
         env:

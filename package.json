@@ -1,7 +1,12 @@
 {
   "name": "postalcode",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ]
+  "scripts": {
+    "download": "pnpm --filter @japan-d2/postalcode-downloader download",
+    "lint": "pnpm -r run lint",
+    "format": "pnpm -r run format",
+    "format:check": "pnpm -r run format:check",
+    "type-check": "pnpm -r run type-check"
+  },
+  "packageManager": "pnpm@10"
 }

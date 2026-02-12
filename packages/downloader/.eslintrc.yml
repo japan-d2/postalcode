@@ -1,4 +1,0 @@
-extends:
-  - ./.eslintrc.base.yml
-rules:
-  no-console: off

@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
-    "lib": ["es2020"],
-    "moduleResolution": "node",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "strict": true,
     "sourceMap": false,
-    "target": "es2019",
+    "target": "ES2022",
     "outDir": "dist",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src/**/*.ts",
-    "typings/**/*.ts"
-  ]
+  "include": ["src/**/*.ts", "typings/**/*.ts"]
 }
