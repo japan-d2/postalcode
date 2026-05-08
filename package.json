@@ -8,5 +8,5 @@
     "format:check": "pnpm -r run format:check",
     "type-check": "pnpm -r run type-check"
   },
-  "packageManager": "pnpm@10"
+  "packageManager": "pnpm@11"
 }
