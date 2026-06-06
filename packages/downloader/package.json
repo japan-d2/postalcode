@@ -13,7 +13,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "archiver": "^7.0.1",
+    "archiver": "^8.0.0",
     "axios": "^1.13.5",
     "csv-parse": "^6.1.0",
     "iconv-lite": "^0.7.2",
@@ -21,7 +21,7 @@
     "unzipper": "^0.12.3"
   },
   "devDependencies": {
-    "@types/archiver": "^7.0.0",
+    "@types/archiver": "^8.0.0",
     "@types/node": "^25.2.3",
     "@types/unzipper": "^0.10.11",
     "eslint": "^9.18.0",
