@@ -15,7 +15,7 @@
   "dependencies": {
     "archiver": "^7.0.1",
     "axios": "^1.13.5",
-    "csv-parse": "^6.1.0",
+    "csv-parse": "^7.0.0",
     "iconv-lite": "^0.7.2",
     "stream-transform": "^3.4.0",
     "unzipper": "^0.12.3"

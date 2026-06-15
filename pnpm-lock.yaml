@@ -17,8 +17,8 @@ importers:
         specifier: ^1.13.5
         version: 1.13.5
       csv-parse:
-        specifier: ^6.1.0
-        version: 6.1.0
+        specifier: ^7.0.0
+        version: 7.0.0
       iconv-lite:
         specifier: ^0.7.2
         version: 0.7.2
@@ -488,8 +488,8 @@ packages:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
-  csv-parse@6.1.0:
-    resolution: {integrity: sha512-CEE+jwpgLn+MmtCpVcPtiCZpVtB6Z2OKPTr34pycYYoL7sxdOkXDdQ4lRiw6ioC0q6BLqhc6cKweCVvral8yhw==}
+  csv-parse@7.0.0:
+    resolution: {integrity: sha512-CSssqPAK5us09FhMI9juM0jnqXUJP+rtWeIfivTYBLNH/8rnxkQlZvoRemF6MAyfNov9XU8mN2wwF/pP68sxTA==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -1456,7 +1456,7 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  csv-parse@6.1.0: {}
+  csv-parse@7.0.0: {}
 
   debug@4.4.3:
     dependencies:
