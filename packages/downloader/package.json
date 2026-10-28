@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/archiver": "^7.0.0",
-    "@types/node": "^25.2.3",
+    "@types/node": "^26.0.0",
     "@types/unzipper": "^0.10.11",
     "eslint": "^9.18.0",
     "prettier": "^3.8.1",
